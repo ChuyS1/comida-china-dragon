@@ -1,6 +1,6 @@
 // src/App.jsx
 
-import React, { useState, useEffect } from 'react'; // Agregamos useEffect por si acaso, aunque useState lazy es suficiente
+import React, { useState, useEffect } from 'react';
 import HomePage from './pages/HomePage';
 import MenuPage from './pages/MenuPage';
 import CartPage from './pages/CartPage'; 
@@ -11,18 +11,69 @@ import AdminPage from './pages/AdminPage';
 import './App.css'; 
 import './index.css';
 
+// 1. IMPORTACIONES NECESARIAS PARA ESCUCHAR LA BASE DE DATOS
+import { db } from './firebase'; 
+import { doc, onSnapshot } from 'firebase/firestore';
+
 function App() {
   const [currentView, setCurrentView] = useState('home');
   const [cart, setCart] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState(''); 
   
-  // ✅ CAMBIO 1: MEMORIA INTELIGENTE
-  // Inicializamos el estado buscando si ya existe un pedido guardado en el navegador
+  // Estado del pedido activo
   const [currentOrderId, setCurrentOrderId] = useState(() => {
     return localStorage.getItem('activeOrderId') || null;
   });
 
-  // ... (Tus funciones de addToCart, removeFromCart, deleteFromCart siguen igual) ...
+  // ✅ NUEVO: MONITOREO AUTOMÁTICO DEL PEDIDO
+  useEffect(() => {
+    // Si no hay un pedido activo, no gastamos recursos escuchando
+    if (!currentOrderId) return;
+
+    console.log("Escuchando actualizaciones del pedido:", currentOrderId);
+
+    // Creamos una referencia al documento específico del pedido
+    const orderRef = doc(db, "orders", currentOrderId);
+
+    // onSnapshot es un "oyente" que se activa cada vez que algo cambia en ese pedido en la BD
+    const unsubscribe = onSnapshot(orderRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const data = docSnapshot.data();
+        
+        // 🔎 LA REGLA DE ORO:
+        // Si el admin pone el estatus como "Entregado", borramos todo.
+        if (data.status === 'Entregado') {
+          console.log("Pedido entregado. Limpiando rastro...");
+          
+          // 1. Borramos del almacenamiento del navegador
+          localStorage.removeItem('activeOrderId');
+          
+          // 2. Borramos del estado (Esto hace desaparecer el botón INSTANTÁNEAMENTE)
+          setCurrentOrderId(null);
+          
+          // Opcional: Si el usuario estaba viendo el estatus, lo mandamos al inicio
+          if (currentView === 'confirmation' || currentView === 'status') {
+            setCurrentView('home');
+          }
+        }
+      } else {
+        // Si el documento ya no existe (fue borrado), también limpiamos
+        console.log("El pedido ya no existe en la base de datos.");
+        localStorage.removeItem('activeOrderId');
+        setCurrentOrderId(null);
+      }
+    }, (error) => {
+      console.error("Error escuchando el pedido:", error);
+    });
+
+    // Función de limpieza: deja de escuchar si el usuario cierra la app o cambia el ID
+    return () => unsubscribe();
+  }, [currentOrderId, currentView]); // Se ejecuta cuando cambia el ID o la vista
+
+  // -----------------------------------------------------------------------
+  // El resto de tus funciones sigue IGUAL
+  // -----------------------------------------------------------------------
+
   const addToCart = (item) => { 
     setCart((prevCart) => {
       const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
@@ -61,13 +112,11 @@ function App() {
     window.scrollTo(0, 0);
   };
 
-  // ✅ CAMBIO 2: FUNCIÓN PARA GUARDAR EL PEDIDO
-  // Esta función se la pasaremos a OrderPage para que la ejecute al terminar
   const handleOrderCompleted = (newOrderId) => {
-    setCurrentOrderId(newOrderId);           // 1. Actualiza el estado de React
-    localStorage.setItem('activeOrderId', newOrderId); // 2. Guarda en el Disco Duro del navegador
-    setCart([]);                             // 3. Limpia el carrito (opcional, pero recomendado)
-    handleNavigate('confirmation');          // 4. Nos lleva a la confirmación
+    setCurrentOrderId(newOrderId);           
+    localStorage.setItem('activeOrderId', newOrderId); 
+    setCart([]);                             
+    handleNavigate('confirmation');          
   };
 
   const renderView = () => {
@@ -75,7 +124,6 @@ function App() {
       case 'home':
         return <HomePage 
                   onNavigate={() => handleNavigate('menu')}
-                  // ✅ CAMBIO 3: Pasamos las props a HomePage para el botón inteligente
                   activeOrderId={currentOrderId}
                   onNavigateToStatus={() => handleNavigate('confirmation')} 
                />;
@@ -102,7 +150,6 @@ function App() {
           cart={cart} 
           total={cartTotal} 
           paymentMethod={paymentMethod}
-          // ✅ CAMBIO 4: Pasamos nuestra nueva función optimizada
           onOrderComplete={handleOrderCompleted}
         />;
       case 'confirmation':
@@ -123,7 +170,6 @@ function App() {
     <div className="app-container">
       {renderView()}
       
-      {/* Botón de Admin (Sin cambios) */}
       {currentView === 'home' && (
         <button 
           onClick={() => handleNavigate('login')} 
