@@ -679,3 +679,70 @@ body {
     width: 400px; 
   }
 }
+
+/* ------------------------------------------- */
+/* 9. ESTILOS DE BOTONES Y FORMULARIOS (NUEVO) */
+/* ------------------------------------------- */
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.btn-primary {
+  background-color: #D32F2F; /* Rojo Dragón */
+  color: white;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* El estilo especial para el botón de rastreo */
+/* Nota: HomePage.jsx usa estilos en línea para el botón actualmente,
+   pero este keyframe "pulse" ES NECESARIO para que la animación funcione */
+
+.btn-status {
+  background-color: #FFC107; /* Amarillo de alerta/atención */
+  color: #333;
+  padding: 12px 25px;
+  font-size: 1rem;
+  border: 2px solid #FFA000;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  animation: pulse 2s infinite; /* Un pequeño efecto de latido */
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.order-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.order-form input, .order-form textarea {
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}

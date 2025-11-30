@@ -1,14 +1,15 @@
 // src/pages/OrderPage.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // 1. Importamos useEffect
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-// Importaciones para Firebase
 import { db } from '../firebase'; 
 import { collection, addDoc } from 'firebase/firestore';
 
-// Recibimos 'setCurrentOrderId' para guardar el ID del pedido
-const OrderPage = ({ onNavigate, cart, total, paymentMethod, setCurrentOrderId }) => {
+// ⚠️ CAMBIO IMPORTANTE EN PROPS:
+// Cambiamos 'setCurrentOrderId' por 'onOrderComplete' para que coincida con tu nuevo App.jsx
+const OrderPage = ({ onNavigate, cart, total, paymentMethod, onOrderComplete }) => {
+  
   const [formData, setFormData] = useState({
     nombre: '',
     telefono: '',
@@ -16,6 +17,22 @@ const OrderPage = ({ onNavigate, cart, total, paymentMethod, setCurrentOrderId }
     comentarios: '',
   });
   const [isSending, setIsSending] = useState(false);
+
+  // ✅ 2. MEMORIA: CARGAR DATOS DEL CLIENTE
+  // Al abrir la página, buscamos si hay datos guardados
+  useEffect(() => {
+    const savedData = localStorage.getItem('customerData');
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      // Solo recuperamos datos personales, los comentarios los dejamos en blanco
+      setFormData(prev => ({
+        ...prev,
+        nombre: parsedData.nombre || '',
+        telefono: parsedData.telefono || '',
+        direccion: parsedData.direccion || ''
+      }));
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,6 +43,15 @@ const OrderPage = ({ onNavigate, cart, total, paymentMethod, setCurrentOrderId }
     e.preventDefault();
     setIsSending(true);
 
+    // ✅ 3. MEMORIA: GUARDAR DATOS DEL CLIENTE
+    // Guardamos nombre, teléfono y dirección para la próxima vez
+    const dataToSave = {
+      nombre: formData.nombre,
+      telefono: formData.telefono,
+      direccion: formData.direccion
+    };
+    localStorage.setItem('customerData', JSON.stringify(dataToSave));
+
     const newOrder = {
       date: new Date().toLocaleString(),
       timestamp: new Date(),
@@ -33,18 +59,14 @@ const OrderPage = ({ onNavigate, cart, total, paymentMethod, setCurrentOrderId }
       items: cart,
       total: total,
       paymentMethod: paymentMethod || 'No especificado',
-      status: 'Pendiente'
+      status: 'Pendiente' // Estado inicial para Firebase
     };
 
     try {
       // 1. GUARDAR EN FIREBASE
       const docRef = await addDoc(collection(db, "orders"), newOrder);
       
-      // 🛑 AQUÍ GUARDAMOS EL ID DEL PEDIDO 🛑
-      // Esto permite que la ConfirmationPage sepa qué pedido rastrear
-      setCurrentOrderId(docRef.id);
-
-      // 2. WHATSAPP (Opcional, para notificarte)
+      // 2. WHATSAPP
       const productosTexto = cart.map(item => 
         `- ${item.quantity}x ${item.name} ($${item.price * item.quantity})`
       ).join('\n');
@@ -58,16 +80,25 @@ Pago: ${paymentMethod}
 
 *Productos:*
 ${productosTexto}
+*Dir:* ${formData.direccion}
+*Comentarios:* ${formData.comentarios}
       `.trim();
 
       const numeroTelefono = '524411151169'; 
       const urlWhatsApp = `https://wa.me/${numeroTelefono}?text=${encodeURIComponent(mensaje)}`;
       
-      // Abrimos WhatsApp en una pestaña nueva
+      // Abrimos WhatsApp
       window.open(urlWhatsApp, '_blank');
 
-      // 3. IR A CONFIRMACIÓN
-      onNavigate('confirmation'); 
+      // ✅ 4. FINALIZAR PROCESO INTELIGENTE
+      // Usamos la función que viene de App.jsx que hace tres cosas:
+      // a) Guarda el ID en memoria, b) Limpia el carrito, c) Navega a confirmación
+      if (onOrderComplete) {
+        onOrderComplete(docRef.id);
+      } else {
+        // Respaldo por si acaso
+        onNavigate('confirmation');
+      }
 
     } catch (error) {
       console.error("Error al enviar:", error);
@@ -102,7 +133,7 @@ ${productosTexto}
           <input type="text" name="direccion" value={formData.direccion} onChange={handleChange} required placeholder="Calle, número, colonia" />
 
           <label>Comentarios</label>
-          <textarea name="comentarios" rows="3" value={formData.comentarios} onChange={handleChange} placeholder="Instrucciones..." />
+          <textarea name="comentarios" rows="3" value={formData.comentarios} onChange={handleChange} placeholder="Instrucciones especiales..." />
 
           <div className="form-buttons">
             <button type="submit" className="btn-order" disabled={isSending}>

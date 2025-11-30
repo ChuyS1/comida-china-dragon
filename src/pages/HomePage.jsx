@@ -5,12 +5,10 @@ import Header from '../components/Header';
 import dragonImage from '../assets/dragon_logo.png'; 
 import backgroundImage from '../assets/chinese_ingredients_bg.jpg'; 
 
-const HomePage = ({ onNavigate }) => {
+// 1. Recibimos las nuevas props: activeOrderId y onNavigateToStatus
+const HomePage = ({ onNavigate, activeOrderId, onNavigateToStatus }) => {
   return (
     <div className="home-page home-page-background"> 
-      {/* Aquí usamos el Header SIN la prop 'onBack'.
-        Al no pasarle onBack, la flecha NO se renderizará.
-      */}
       <Header />
 
       <div className="welcome-section">
@@ -21,11 +19,40 @@ const HomePage = ({ onNavigate }) => {
           className="home-dragon-logo" 
         />
 
+        {/* --- BOTÓN 1: IR AL MENÚ (Siempre visible) --- */}
         <div className="menu-cta" onClick={onNavigate}>
           <div className="menu-text">
             <span className="icon-menu-bar">II</span> MENU
           </div>
         </div>
+
+        {/* --- BOTÓN 2: VER ESTATUS (Solo visible si hay pedido) --- */}
+        {activeOrderId && (
+          <div 
+            className="status-cta" 
+            onClick={onNavigateToStatus}
+            style={{
+              marginTop: '20px',
+              backgroundColor: '#FFC107', // Amarillo dorado para destacar
+              color: '#333',
+              padding: '12px 24px',
+              borderRadius: '30px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.5)',
+              border: '2px solid #FFA000',
+              animation: 'pulse 2s infinite', // Efecto de latido suave
+              maxWidth: '250px' // Para que no sea más ancho que el menú
+            }}
+          >
+            <span style={{ fontSize: '1.2rem' }}>🚚</span>
+            VER MI PEDIDO
+          </div>
+        )}
 
       </div>
     </div>

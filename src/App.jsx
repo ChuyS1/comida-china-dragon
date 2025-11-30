@@ -1,6 +1,6 @@
 // src/App.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Agregamos useEffect por si acaso, aunque useState lazy es suficiente
 import HomePage from './pages/HomePage';
 import MenuPage from './pages/MenuPage';
 import CartPage from './pages/CartPage'; 
@@ -16,10 +16,14 @@ function App() {
   const [cart, setCart] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState(''); 
   
-  // 🆔 NUEVO ESTADO: Guardamos el ID del último pedido para mostrar su estatus
-  const [currentOrderId, setCurrentOrderId] = useState(null);
+  // ✅ CAMBIO 1: MEMORIA INTELIGENTE
+  // Inicializamos el estado buscando si ya existe un pedido guardado en el navegador
+  const [currentOrderId, setCurrentOrderId] = useState(() => {
+    return localStorage.getItem('activeOrderId') || null;
+  });
 
-  const addToCart = (item) => { /* ... (código igual) ... */
+  // ... (Tus funciones de addToCart, removeFromCart, deleteFromCart siguen igual) ...
+  const addToCart = (item) => { 
     setCart((prevCart) => {
       const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
       if (existingItem) {
@@ -32,7 +36,7 @@ function App() {
     });
   };
 
-  const removeFromCart = (itemId) => { /* ... (código igual) ... */
+  const removeFromCart = (itemId) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === itemId);
       if (existingItem.quantity === 1) {
@@ -57,10 +61,24 @@ function App() {
     window.scrollTo(0, 0);
   };
 
+  // ✅ CAMBIO 2: FUNCIÓN PARA GUARDAR EL PEDIDO
+  // Esta función se la pasaremos a OrderPage para que la ejecute al terminar
+  const handleOrderCompleted = (newOrderId) => {
+    setCurrentOrderId(newOrderId);           // 1. Actualiza el estado de React
+    localStorage.setItem('activeOrderId', newOrderId); // 2. Guarda en el Disco Duro del navegador
+    setCart([]);                             // 3. Limpia el carrito (opcional, pero recomendado)
+    handleNavigate('confirmation');          // 4. Nos lleva a la confirmación
+  };
+
   const renderView = () => {
     switch (currentView) {
       case 'home':
-        return <HomePage onNavigate={() => handleNavigate('menu')} />;
+        return <HomePage 
+                  onNavigate={() => handleNavigate('menu')}
+                  // ✅ CAMBIO 3: Pasamos las props a HomePage para el botón inteligente
+                  activeOrderId={currentOrderId}
+                  onNavigateToStatus={() => handleNavigate('confirmation')} 
+               />;
       case 'menu':
         return <MenuPage 
           onNavigate={handleNavigate} 
@@ -84,13 +102,12 @@ function App() {
           cart={cart} 
           total={cartTotal} 
           paymentMethod={paymentMethod}
-          // Pasamos la función para guardar el ID del pedido
-          setCurrentOrderId={setCurrentOrderId}
+          // ✅ CAMBIO 4: Pasamos nuestra nueva función optimizada
+          onOrderComplete={handleOrderCompleted}
         />;
       case 'confirmation':
         return <ConfirmationPage 
           onNavigate={() => handleNavigate('home')} 
-          // Pasamos el ID para que la página sepa qué buscar
           orderId={currentOrderId}
         />;
       case 'login':
@@ -105,6 +122,8 @@ function App() {
   return (
     <div className="app-container">
       {renderView()}
+      
+      {/* Botón de Admin (Sin cambios) */}
       {currentView === 'home' && (
         <button 
           onClick={() => handleNavigate('login')} 
