@@ -1,0 +1,681 @@
+/* src/App.css */
+
+/* ------------------------------------------- */
+/* 1. ESTILOS GENERALES Y VARIABLES */
+/* ------------------------------------------- */
+:root {
+  --accent-color: #FFC404; /* Amarillo/Dorado Brillante */
+  --bg-color: #1a1a1a;     /* Negro/Gris muy oscuro de fondo */
+  --text-color: #ffffff;   /* Texto blanco */
+}
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ------------------------------------------- */
+/* 2. ESTILOS DEL HEADER (ENCABEZADO) */
+/* ------------------------------------------- */
+.app-header {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  padding: 20px 15px;
+  background-color: #000000;
+  border-bottom: 3px solid var(--accent-color); 
+  position: sticky; 
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.app-header h1 {
+  font-size: 1.4rem;
+  margin: 0;
+  font-weight: 800;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.menu-button-icon, .back-button {
+  background: none;
+  border: none;
+  color: var(--accent-color);
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.back-button {
+  margin-right: 10px;
+}
+
+.icon-back {
+  font-weight: bold;
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.header-left, .header-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.header-right {
+  justify-content: flex-end;
+  gap: 15px;
+}
+.header-center {
+  flex: 2;
+  text-align: center;
+}
+
+/* Indicador del Carrito en el Header */
+.cart-indicator {
+  display: flex;
+  align-items: center;
+  background-color: var(--accent-color);
+  padding: 5px 10px;
+  border-radius: 20px;
+  color: black;
+  font-weight: bold;
+  animation: popIn 0.3s ease;
+}
+.cart-icon { margin-right: 5px; }
+
+@keyframes popIn {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
+/* ------------------------------------------- */
+/* 3. ESTILOS DE HOMEPAGE (FONDO RESPONSIVO) */
+/* ------------------------------------------- */
+.home-page-background {
+  background-image: url('./assets/chinese_ingredients_bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* Min-height con soporte para móviles */
+  min-height: 100vh;
+  min-height: 100dvh; 
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  position: relative;
+  z-index: 1;
+  overflow-x: hidden;
+}
+
+/* Capa oscura */
+.home-page-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); 
+  backdrop-filter: blur(2px); 
+  z-index: -1;
+}
+
+.welcome-section {
+  flex: 1; 
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.welcome-section h2.welcome-title {
+  font-size: 2.8rem; 
+  font-weight: 900;
+  margin-bottom: 20px;
+  color: var(--accent-color);
+  text-shadow: 3px 3px 8px rgba(0, 0, 0, 1); 
+  line-height: 1.2;
+  max-width: 95%;
+}
+
+.home-dragon-logo {
+  width: 320px; 
+  height: auto;
+  margin-bottom: 30px;
+  display: block;
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.8)); 
+  max-width: 85%;
+}
+
+.menu-cta {
+  background-color: rgba(0, 0, 0, 0.7); 
+  border: 1px solid var(--accent-color);
+  padding: 15px 40px;
+  border-radius: 8px;
+  margin-top: 20px;
+  cursor: pointer;
+  width: fit-content; 
+  align-self: center; 
+  transition: transform 0.2s;
+}
+
+.menu-cta:active {
+  transform: scale(0.95);
+}
+
+.menu-text {
+  color: var(--accent-color);
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+/* ------------------------------------------- */
+/* 4. ESTILOS DE MENU PAGE */
+/* ------------------------------------------- */
+.menu-page {
+  padding-bottom: 80px;
+  /* Usamos la misma imagen de fondo para consistencia */
+  background-image: url('./assets/chinese_ingredients_bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.menu-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* Más oscuro para leer el menú */
+  backdrop-filter: blur(3px);
+  z-index: -1;
+}
+
+.menu-title {
+  text-align: center;
+  color: var(--accent-color);
+  font-size: 2.2rem;
+  margin: 30px 0 20px;
+  text-shadow: 2px 2px 4px black;
+  font-weight: 800;
+}
+
+.menu-list-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 columnas en móvil */
+  gap: 15px; 
+  padding: 15px;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  background-color: #242424; 
+  border-radius: 8px;
+  padding-bottom: 10px;
+  overflow: hidden;
+  border: 1px solid #333;
+  transition: transform 0.2s;
+}
+
+.item-image {
+  width: 100%;
+  height: 120px; 
+  object-fit: cover; 
+  background-color: #555; 
+}
+
+.item-details {
+    padding: 8px 5px;
+    width: 100%;
+}
+
+.item-name {
+  font-size: 0.95rem;
+  font-weight: bold;
+  margin: 5px 0;
+  color: white;
+}
+
+.item-price {
+  font-size: 1.1rem;
+  color: var(--accent-color);
+  margin: 0;
+  font-weight: bold;
+}
+
+/* Botón flotante inferior */
+.next-page-button {
+  width: 90%;
+  margin: 20px auto;
+  display: block;
+  padding: 15px;
+  background-color: #333;
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* ------------------------------------------- */
+/* 5. ESTILOS DE CART PAGE (CARRITO) */
+/* ------------------------------------------- */
+.cart-page {
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  padding-bottom: 80px;
+}
+
+.cart-content {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cart-title {
+  text-align: center;
+  color: var(--accent-color);
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+/* Tarjeta de producto en carrito */
+.cart-item-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #242424;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  padding: 10px;
+  gap: 10px;
+}
+
+.cart-item-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.cart-item-info {
+  flex: 1;
+  text-align: left;
+}
+
+.cart-item-info h4 {
+  margin: 0;
+  color: white;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.cart-item-price {
+  color: var(--accent-color);
+  margin: 5px 0 0 0;
+  font-weight: bold;
+}
+
+/* Controles de Cantidad (+ -) */
+.qty-controls {
+  display: flex;
+  align-items: center;
+  background-color: #333;
+  border-radius: 4px;
+  padding: 2px;
+  border: 1px solid #555;
+}
+
+.btn-qty {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-qty:active {
+  background-color: #555;
+}
+
+.qty-number {
+  color: var(--accent-color);
+  font-weight: bold;
+  padding: 0 8px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.btn-delete {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  padding: 5px;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+/* Sección de Pago y Total */
+.cart-total-section {
+  margin-top: 30px;
+  border-top: 2px solid var(--accent-color);
+  padding-top: 20px;
+}
+
+.cart-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 25px;
+}
+
+/* Métodos de Pago */
+.payment-section {
+  margin: 20px 0;
+  text-align: left;
+  background-color: #242424;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.payment-title {
+  color: white;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  margin-top: 0;
+}
+
+.payment-options {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.payment-option {
+  flex: 1;
+  background-color: #333;
+  padding: 12px;
+  border-radius: 5px;
+  border: 1px solid #555;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: white;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.payment-option.selected {
+  border-color: var(--accent-color);
+  background-color: rgba(255, 196, 4, 0.15);
+  color: var(--accent-color);
+}
+
+.radio-circle {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--accent-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  color: var(--accent-color);
+}
+
+.payment-info-box {
+  background-color: #1a1a1a;
+  padding: 12px;
+  border-radius: 5px;
+  border-left: 4px solid var(--accent-color);
+  animation: fadeIn 0.3s ease;
+}
+
+.payment-info-box p {
+  margin: 5px 0;
+  color: #ddd;
+  font-size: 0.9rem;
+}
+
+.payment-instruction {
+  color: var(--accent-color) !important;
+  font-weight: bold;
+  margin-top: 8px !important;
+  font-style: italic;
+}
+
+.btn-proceed {
+  width: 100%;
+  padding: 15px;
+  background-color: var(--accent-color);
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: black;
+  margin-top: 20px;
+  transition: opacity 0.2s;
+}
+.btn-proceed:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.empty-cart {
+  text-align: center;
+  color: #aaa;
+  margin-top: 50px;
+}
+
+.btn-back-menu {
+  margin-top: 20px;
+  padding: 12px 25px;
+  background-color: transparent;
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+/* ------------------------------------------- */
+/* 6. ESTILOS DE ORDER PAGE */
+/* ------------------------------------------- */
+.order-page {
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  padding-bottom: 80px;
+}
+
+.order-content {
+    padding: 20px;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.order-title {
+    color: var(--accent-color);
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.order-phone-number {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 25px;
+}
+
+.shipping-form {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 15px;
+}
+
+.shipping-form label {
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.shipping-form input, .shipping-form textarea {
+    padding: 12px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    font-size: 1rem;
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+    gap: 10px;
+}
+
+.btn-order, .btn-cancel {
+    padding: 15px 0;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    flex: 1;
+}
+
+.btn-order { background-color: var(--accent-color); color: black; }
+.btn-cancel { background-color: #555; color: white; }
+
+/* ------------------------------------------- */
+/* 7. ESTILOS DE CONFIRMATION PAGE */
+/* ------------------------------------------- */
+.confirmation-page {
+  min-height: 100vh; 
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-color);
+}
+
+.confirmation-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.confirmation-message {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 20px;
+    max-width: 80%;
+}
+
+.thanks-message {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: var(--text-color);
+}
+
+.confirmation-dragon {
+    width: 250px;
+    height: auto;
+    margin-bottom: 40px;
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+}
+
+.btn-back-to-start {
+    padding: 15px 50px;
+    background-color: #333; 
+    color: white;
+    border: 1px solid white;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Footer Oculto */
+.app-footer { display: none; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ------------------------------------------- */
+/* 8. RESPONSIVIDAD Y AJUSTES DE MOVIL/PC */
+/* ------------------------------------------- */
+
+/* Ajuste específico para evitar fondo fijo en móviles */
+@media (max-width: 768px) {
+  .home-page-background, .menu-page {
+    background-attachment: scroll; 
+    background-position: center top; 
+  }
+}
+
+/* Ajustes para PC (Pantallas grandes) */
+@media (min-width: 768px) {
+  .home-page-background, .menu-page {
+    background-attachment: fixed;
+  }
+  
+  .menu-list-container {
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas fijas */
+    max-width: 1000px; 
+    margin: 0 auto; 
+    gap: 40px;
+  }
+  
+  .welcome-section h2.welcome-title {
+    font-size: 3.5rem; 
+  }
+  
+  .home-dragon-logo {
+    width: 400px; 
+  }
+}

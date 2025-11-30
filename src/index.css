@@ -1,0 +1,65 @@
+/* src/index.css */
+
+:root {
+  /* Define un color de fondo oscuro para toda la app */
+  --bg-color: #1a1a1a; 
+  
+  /* Define el color de texto principal */
+  --text-color: #ffffff;
+  
+  /* 🛑 AQUÍ ESTÁ TU COLOR AMARILLO/DORADO 🛑 */
+  --accent-color: #FFC404; 
+  
+  font-family: sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* Estilos base para todo el mundo */
+body {
+  margin: 0;
+  background-color: var(--bg-color); 
+  color: var(--text-color);
+  /* Asegura que el contenido esté centrado */
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* 📱 REGLAS PARA CELULARES (450px o menos) */
+@media (max-width: 450px) {
+  #root {
+    max-width: 450px; 
+    width: 100%;
+    margin: 0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
+  }
+}
+
+/* 💻 REGLAS PARA PC (Más de 450px) */
+@media (min-width: 451px) {
+    #root {
+        /* En PC, ocupamos todo el ancho */
+        width: 100%;
+        max-width: 100%;
+        box-shadow: none;
+    }
+}
+/* ... tus estilos anteriores ... */
+
+/* Ocultar barra de desplazamiento para Chrome, Safari y Opera */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ocultar barra de desplazamiento para IE, Edge y Firefox */
+html {
+  -ms-overflow-style: none;  /* IE y Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+body {
+  -ms-overflow-style: none;  /* IE y Edge */
+  scrollbar-width: none;  /* Firefox */
+  overflow-x: hidden; /* Asegura que no haya scroll horizontal */
+}
