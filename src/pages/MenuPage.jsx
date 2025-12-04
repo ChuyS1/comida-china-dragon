@@ -5,14 +5,12 @@ import Header from '../components/Header';
 import MenuItem from '../components/menuItem'; 
 import { menuItems } from '../menuData'; 
 
-// 1. AÑADIMOS 'onGoToCart' AQUÍ PARA PODER RECIBIRLO DE APP.JSX
 const MenuPage = ({ onNavigate, addToCart, cartCount, onGoToCart }) => {
   return (
     <div className="menu-page">
-      {/* 2. PASAMOS LA FUNCIÓN AL HEADER 
-         Ahora, cuando toques el carrito en el Header, se ejecutará 'onGoToCart'
-      */}
+      {/* ✅ CAMBIO AQUÍ: Agregamos 'onBack' */}
       <Header 
+        onBack={() => onNavigate('home')} // Esto activa la flecha "←" para volver al inicio
         cartCount={cartCount} 
         onCartClick={onGoToCart} 
       />
