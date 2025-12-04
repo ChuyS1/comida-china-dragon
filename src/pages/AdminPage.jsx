@@ -9,16 +9,16 @@ import { collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc } fro
 const AdminPage = ({ onNavigate }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // 1. NUEVO ESTADO: Para saber en qué pestaña estamos ('activos' o 'historial')
+  const [currentTab, setCurrentTab] = useState('activos');
 
   useEffect(() => {
-    // 1. CONEXIÓN EN TIEMPO REAL
-    // Creamos una consulta para escuchar la colección "orders" ordenada por fecha
     const q = query(collection(db, "orders"), orderBy("timestamp", "desc"));
 
-    // onSnapshot se queda "escuchando" cambios en la base de datos
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const ordersData = snapshot.docs.map(doc => ({
-        id: doc.id, // ID único del documento en Firebase
+        id: doc.id, 
         ...doc.data()
       }));
       setOrders(ordersData);
@@ -28,11 +28,9 @@ const AdminPage = ({ onNavigate }) => {
       setLoading(false);
     });
 
-    // Limpiamos la conexión cuando te sales de la página
     return () => unsubscribe();
   }, []);
 
-  // Función para cambiar el estado del pedido en la nube
   const updateStatus = async (orderId, newStatus) => {
     try {
       const orderRef = doc(db, "orders", orderId);
@@ -43,7 +41,6 @@ const AdminPage = ({ onNavigate }) => {
     }
   };
 
-  // Función para borrar un pedido de la nube
   const deleteOrder = async (orderId) => {
     if(window.confirm('¿Estás seguro de borrar este pedido permanentemente?')) {
       try {
@@ -55,13 +52,23 @@ const AdminPage = ({ onNavigate }) => {
     }
   };
 
+  // 2. FILTROS INTELIGENTES
+  // Separamos los pedidos en dos listas automáticamente
+  const activeOrders = orders.filter(order => order.status !== 'Entregado');
+  const historyOrders = orders.filter(order => order.status === 'Entregado');
+
+  // Decidimos cuál lista mostrar según la pestaña seleccionada
+  const displayedOrders = currentTab === 'activos' ? activeOrders : historyOrders;
+
   return (
     <div className="admin-page" style={{ minHeight: '100vh', backgroundColor: '#1a1a1a', color: 'white', paddingBottom: '50px' }}>
       <Header />
       
       <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', borderBottom: '1px solid #444', paddingBottom: '15px' }}>
-          <h2 style={{ color: '#FFC404', margin: 0 }}>Pedidos en Vivo 🔴</h2>
+        
+        {/* Encabezado y Botón Salir */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #444', paddingBottom: '15px' }}>
+          <h2 style={{ color: '#FFC404', margin: 0 }}>Panel de Control 👨‍🍳</h2>
           <button 
             onClick={() => onNavigate('home')} 
             style={{ background: '#333', color: 'white', border: '1px solid #fff', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
@@ -70,17 +77,65 @@ const AdminPage = ({ onNavigate }) => {
           </button>
         </div>
 
+        {/* 3. BOTONES DE PESTAÑAS */}
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '25px' }}>
+          <button 
+            onClick={() => setCurrentTab('activos')}
+            style={{
+              flex: 1,
+              padding: '12px',
+              backgroundColor: currentTab === 'activos' ? '#FFC404' : '#333',
+              color: currentTab === 'activos' ? 'black' : 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              fontSize: '1rem'
+            }}
+          >
+            🔥 EN CURSO ({activeOrders.length})
+          </button>
+
+          <button 
+            onClick={() => setCurrentTab('historial')}
+            style={{
+              flex: 1,
+              padding: '12px',
+              backgroundColor: currentTab === 'historial' ? '#FFC404' : '#333',
+              color: currentTab === 'historial' ? 'black' : 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              fontSize: '1rem'
+            }}
+          >
+            📂 HISTORIAL ({historyOrders.length})
+          </button>
+        </div>
+
+        {/* Lista de Pedidos */}
         {loading ? (
           <p style={{ textAlign: 'center' }}>Cargando pedidos...</p>
-        ) : orders.length === 0 ? (
+        ) : displayedOrders.length === 0 ? (
           <div style={{ textAlign: 'center', color: '#888', marginTop: '50px' }}>
-            <h3>No hay pedidos activos.</h3>
-            <p>Los pedidos que realices aparecerán aquí automáticamente.</p>
+            <h3>
+              {currentTab === 'activos' 
+                ? "¡Todo limpio! No hay pedidos pendientes." 
+                : "No hay historial de pedidos entregados aún."}
+            </h3>
           </div>
         ) : (
           <div className="orders-list" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {orders.map(order => (
-              <div key={order.id} style={{ backgroundColor: '#242424', padding: '20px', borderRadius: '8px', border: `2px solid ${order.status === 'Pendiente' ? '#FFC404' : '#444'}` }}>
+            {displayedOrders.map(order => (
+              <div key={order.id} style={{ 
+                backgroundColor: '#242424', 
+                padding: '20px', 
+                borderRadius: '8px', 
+                // Borde dorado si está pendiente, gris si es historial
+                border: `2px solid ${currentTab === 'activos' ? '#FFC404' : '#555'}`,
+                opacity: currentTab === 'historial' ? 0.8 : 1 // Un poco más opaco si es historial
+              }}>
                 
                 {/* Cabecera del Pedido */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', borderBottom: '1px solid #444', paddingBottom: '10px' }}>
@@ -115,17 +170,17 @@ const AdminPage = ({ onNavigate }) => {
                   ))}
                 </div>
 
-                {/* Acciones (Estado y Borrar) */}
+                {/* Acciones */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                   <select 
-                    value={order.status} 
+                    value={order.status || 'Pendiente'} 
                     onChange={(e) => updateStatus(order.id, e.target.value)}
-                    style={{ padding: '8px', borderRadius: '4px', backgroundColor: '#333', color: 'white', border: '1px solid #555', cursor: 'pointer' }}
+                    style={{ padding: '8px', borderRadius: '4px', backgroundColor: '#333', color: 'white', border: '1px solid #555', cursor: 'pointer', fontWeight: 'bold' }}
                   >
                     <option value="Pendiente">🟡 Pendiente</option>
                     <option value="En Preparación">🟠 En Preparación</option>
                     <option value="En Camino">🚚 En Camino</option>
-                    <option value="Entregado">✅ Entregado</option>
+                    <option value="Entregado">✅ Entregado (Archivar)</option>
                   </select>
                   
                   <button 
