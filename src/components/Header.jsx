@@ -2,8 +2,8 @@
 
 import React from 'react';
 
-// Recibimos 'cartCount' para saber cuántos productos hay
-const Header = ({ onBack, cartCount }) => {
+// Agregamos 'onCartClick' a las propiedades que recibe el componente
+const Header = ({ onBack, cartCount, onCartClick }) => {
   return (
     <header className="app-header">
       <div className="header-left">
@@ -19,9 +19,13 @@ const Header = ({ onBack, cartCount }) => {
       </div>
       
       <div className="header-right">
-        {/* 🛒 Si hay productos (cartCount > 0), mostramos el contador 🛒 */}
+        {/* 🛒 Si hay productos, mostramos el contador y lo hacemos CLICKEABLE 🛒 */}
         {cartCount > 0 && (
-          <div className="cart-indicator">
+          <div 
+            className="cart-indicator" 
+            onClick={onCartClick} // <--- AQUÍ ESTÁ LA MAGIA
+            style={{ cursor: 'pointer', marginRight: '10px' }} // Cursor de manita
+          >
             <span className="cart-icon">🛒</span>
             <span className="cart-count">{cartCount}</span>
           </div>

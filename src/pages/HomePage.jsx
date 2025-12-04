@@ -5,11 +5,16 @@ import Header from '../components/Header';
 import dragonImage from '../assets/dragon_logo.png'; 
 import backgroundImage from '../assets/chinese_ingredients_bg.jpg'; 
 
-// 1. Recibimos las nuevas props: activeOrderId y onNavigateToStatus
-const HomePage = ({ onNavigate, activeOrderId, onNavigateToStatus }) => {
+// 1. Recibimos las nuevas props: cartCount y onGoToCart
+const HomePage = ({ onNavigate, activeOrderId, onNavigateToStatus, cartCount, onGoToCart }) => {
   return (
     <div className="home-page home-page-background"> 
-      <Header />
+      
+      {/* 2. Pasamos esas props al Header para que el carrito sea clickeable */}
+      <Header 
+        cartCount={cartCount} 
+        onCartClick={onGoToCart} 
+      />
 
       <div className="welcome-section">
         <h2 className="welcome-title">Bienvenido a Comida China Dragon</h2>
