@@ -5,13 +5,17 @@ import Header from '../components/Header';
 import MenuItem from '../components/menuItem'; 
 import { menuItems } from '../menuData'; 
 
-const MenuPage = ({ onNavigate, addToCart, cartCount }) => {
+// 1. AÑADIMOS 'onGoToCart' AQUÍ PARA PODER RECIBIRLO DE APP.JSX
+const MenuPage = ({ onNavigate, addToCart, cartCount, onGoToCart }) => {
   return (
     <div className="menu-page">
-      {/* Pasamos cartCount para que se vea el contador del carrito.
-        NO pasamos 'onBack', por lo que NO saldrá la flecha de regreso.
+      {/* 2. PASAMOS LA FUNCIÓN AL HEADER 
+         Ahora, cuando toques el carrito en el Header, se ejecutará 'onGoToCart'
       */}
-      <Header cartCount={cartCount} />
+      <Header 
+        cartCount={cartCount} 
+        onCartClick={onGoToCart} 
+      />
 
       <h2 className="menu-title">Nuestro Menú</h2>
       
@@ -22,16 +26,11 @@ const MenuPage = ({ onNavigate, addToCart, cartCount }) => {
             name={item.name}
             price={item.price}
             image={item.image}
-            // Conectamos el botón AGREGAR + con la función del carrito
             onAdd={() => addToCart(item)} 
           />
         ))}
       </div>
 
-      {/* El botón inferior cambia dinámicamente:
-        - Si tienes productos: Te dice cuántos y te lleva al Carrito ('cart').
-        - Si está vacío: Te pide agregar platillos.
-      */}
       <button 
         className="next-page-button" 
         onClick={() => cartCount > 0 ? onNavigate('cart') : alert("Por favor, agrega platillos a tu pedido primero.")}
