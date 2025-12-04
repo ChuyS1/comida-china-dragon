@@ -23,17 +23,15 @@ const Header = ({ onBack, cartCount, onCartClick }) => {
         {cartCount > 0 && (
           <div 
             className="cart-indicator" 
-            onClick={onCartClick} // <--- AQUÍ ESTÁ LA MAGIA
-            style={{ cursor: 'pointer', marginRight: '10px' }} // Cursor de manita
+            onClick={onCartClick} 
+            style={{ cursor: 'pointer', marginRight: '10px' }} // Mantenemos tu margen
           >
             <span className="cart-icon">🛒</span>
             <span className="cart-count">{cartCount}</span>
           </div>
         )}
         
-        <button className="menu-button-icon">
-          <span className="icon-hamburger">≡</span> 
-        </button>
+        {/* HEMOS ELIMINADO EL BOTÓN DE HAMBURGUESA AQUÍ */}
       </div>
     </header>
   );
