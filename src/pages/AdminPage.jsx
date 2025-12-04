@@ -93,7 +93,7 @@ const AdminPage = ({ onNavigate }) => {
               fontSize: '1rem'
             }}
           >
-            🔥 EN CURSO ({activeOrders.length})
+            EN CURSO ({activeOrders.length})
           </button>
 
           <button 
@@ -110,7 +110,7 @@ const AdminPage = ({ onNavigate }) => {
               fontSize: '1rem'
             }}
           >
-            📂 HISTORIAL ({historyOrders.length})
+            HISTORIAL ({historyOrders.length})
           </button>
         </div>
 
